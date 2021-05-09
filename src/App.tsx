@@ -1,17 +1,22 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 import Header from './components/header/Header';
 import TaskForm from './features/task/taskForm/TaskForm';
 import TaskList from './features/task/taskList/TaskList';
 import { fetchTasks } from './features/task/taskSlice';
 import { AppDispatch } from './app/store';
 import styles from './App.module.scss';
-
 import { auth } from './firebase';
 
-const App: React.FC = () => {
-  console.log(auth);
+const App: React.FC<RouteComponentProps> = (props) => {
   const dispatch: AppDispatch = useDispatch();
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      !user && props.history.push('user-auth');
+    });
+  }, []);
 
   useEffect(() => {
     const getData = () => {
@@ -23,7 +28,7 @@ const App: React.FC = () => {
   return (
     <div className={styles.root}>
       <div className={styles.wrapper}>
-        <Header />
+        <Header history={props.history} />
         <TaskForm />
         <TaskList />
       </div>
